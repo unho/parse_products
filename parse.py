@@ -72,9 +72,9 @@ def extract_product_data(url):
             product['name'] = value
         elif label == "CAS":
             product['CAS'] = value
-        elif label == "Molecular Formula":
+        elif label == "Molecular Formula" and value != "-":
             product['structure'] = convert_formula(value)
-        elif label == "Molecular Weight":
+        elif label == "Molecular Weight" and value != "-":
             if 'properties' not in product:
                 product['properties'] = {}
             product['properties']['weight'] = value
