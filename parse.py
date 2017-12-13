@@ -22,6 +22,7 @@ import re
 
 import requests
 from lxml import html
+from six.moves import range
 from six.moves.urllib.parse import urljoin
 
 
