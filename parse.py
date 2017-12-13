@@ -111,6 +111,10 @@ def extract_product_data(url):
             if 'properties' not in product:
                 product['properties'] = {}
             product['properties']['purity'] = value
+        elif label == "Melting Point":
+            if 'properties' not in product:
+                product['properties'] = {}
+            product['properties']['melting_point'] = value
 
     return product
 
