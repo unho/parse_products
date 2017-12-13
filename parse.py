@@ -17,6 +17,7 @@
 
 """Parsing of HTML webpages."""
 
+import itertools
 import math
 import re
 from multiprocessing import Pool, cpu_count
@@ -138,7 +139,21 @@ def get_last_page(url, count=None):
     return min(int(math.ceil(count / products_per_page)), last_page)
 
 
-def get_product_links(url, count=None):
+def get_list_page_product_links(url):
+    """Returns a list of URLs for all the products in a product list page.
+
+    :param str url: URL for a product list page.
+    :return: Returns a list of product URLs.
+    :rtype: list
+    """
+    tree = html.fromstring(requests.get(url, verify=False).content)
+    row_xpath = '//table[@class="prodtable"][1]/tr[td[@class="borderbtmfine"]]'
+    link_xpath = './/td[@class="borderbtmfine"]/div/a'
+    return [urljoin(url, row.find(link_xpath).attrib['href'])
+            for row in tree.xpath(row_xpath)]
+
+
+def get_all_product_links(url, count=None):
     """Returns a list of URLs for all the products to be processed.
 
     :param str url: URL for the product list.
@@ -148,27 +163,13 @@ def get_product_links(url, count=None):
             a product.
     :rtype: dict
     """
-    product_urls = []
-    i = 0
-
     all_urls = ["%s?page=%d" % (url, number)
                 for number in range(1, get_last_page(url, count) + 1)]
-
-    # Parse each page of the product list to get all product URLs.
-    for current_url in all_urls:
-        tree = html.fromstring(requests.get(current_url, verify=False).content)
-
-        xpath = '//table[@class="prodtable"][1]/tr[td[@class="borderbtmfine"]]'
-        for useful_row in tree.xpath(xpath):
-            i += 1
-            product_urls.append(urljoin(url, useful_row.find(
-                './/td[@class="borderbtmfine"]/div/a').attrib['href']))
-
-            # Process only the specified number of products.
-            if count is not None and i == count:
-                break
-
-    return product_urls
+    pool = Pool(cpu_count() * 2)
+    results = pool.map(get_list_page_product_links, all_urls)
+    pool.terminate()
+    pool.join()
+    return list(itertools.chain(*results))[:count]  # Flatten list of lists.
 
 
 def get_product_data(url, count=None):
@@ -182,7 +183,7 @@ def get_product_data(url, count=None):
     :rtype: dict
     """
     pool = Pool(cpu_count() * 2)
-    results = pool.map(extract_product_data, get_product_links(url, count))
+    results = pool.map(extract_product_data, get_all_product_links(url, count))
     pool.terminate()
     pool.join()
     return results
