@@ -71,6 +71,10 @@ def extract_product_data(url):
             product['CAS'] = value
         elif label == "Molecular Formula":
             product['structure'] = convert_formula(value)
+        elif label == "Molecular Weight":
+            if 'properties' not in product:
+                product['properties'] = {}
+            product['properties']['weight'] = value
 
     # Extract available preset packaging options and their prices, if any.
     prices_table = tree.xpath('//table[@class="pricetable"][1]')[0]
