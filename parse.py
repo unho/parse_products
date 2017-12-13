@@ -87,6 +87,11 @@ def extract_product_data(url):
     if synonyms:
         product['synonyms'] = synonyms[0].split("; ")
 
+    # Extract product's `Material Safety Data Sheet`, if any.
+    msds_link = tree.find('.//a[@title="Download MSDS"]')
+    if msds_link is not None:
+        product['pdf_msds'] = msds_link.attrib['href']
+
     return product
 
 
