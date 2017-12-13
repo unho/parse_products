@@ -98,6 +98,17 @@ def extract_product_data(url):
     if msds_link is not None:
         product['pdf_msds'] = msds_link.attrib['href']
 
+    # Extract more product data from the `Product Specification` table.
+    table = tree.xpath('//table[@class="ptable"]')[1]
+    for useful_row in table.xpath('.//tr[td[@class="ptdataleft"]]'):
+        label = useful_row.find('.//td[@class="ptdataleft"]').text
+        value = useful_row.find('.//td[@class="ptdataright"]').text
+
+        if label == "Purity":
+            if 'properties' not in product:
+                product['properties'] = {}
+            product['properties']['purity'] = value
+
     return product
 
 
