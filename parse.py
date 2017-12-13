@@ -136,8 +136,8 @@ def get_last_page(url, count=None):
     return min(int(math.ceil(count / products_per_page)), last_page)
 
 
-def get_products(url, count=None):
-    """Extract product data for a number of products from the specified URL.
+def get_product_links(url, count=None):
+    """Returns a list of URLs for all the products to be processed.
 
     :param str url: URL for the product list.
     :param int count: optional number of products to process. If not specified
@@ -166,4 +166,17 @@ def get_products(url, count=None):
             if count is not None and i == count:
                 break
 
-    return [extract_product_data(url) for url in product_urls]
+    return product_urls
+
+
+def get_product_data(url, count=None):
+    """Extract product data for a number of products from the specified URL.
+
+    :param str url: URL for the product list.
+    :param int count: optional number of products to process. If not specified
+            then all products in the product list will be processed.
+    :return: Returns a list of dictionaries holding each the extracted data for
+            a product.
+    :rtype: dict
+    """
+    return [extract_product_data(url) for url in get_product_links(url, count)]

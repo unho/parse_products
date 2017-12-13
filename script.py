@@ -22,7 +22,7 @@ import json
 import os
 import sys
 
-from parse import get_products
+from parse import get_product_data
 
 
 def main():
@@ -63,7 +63,7 @@ def main():
 
     # Get the data and output.
     with open(filename, "w") as f:
-        json.dump(get_products(args.url, args.count), f, indent=4)
+        json.dump(get_product_data(args.url, args.count), f, indent=4)
 
 
 if __name__ == '__main__':
