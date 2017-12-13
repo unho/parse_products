@@ -83,9 +83,9 @@ def extract_product_data(url):
         product['packaging']['ne'] = 0.0
 
     # Extract product synonyms, if any.
-    synonyms = tree.xpath('//p[@itemprop="isRelatedTo"]/i/text()')
-    if synonyms:
-        product['synonyms'] = synonyms[0].split("; ")
+    synonyms = tree.find('.//p[@itemprop="isRelatedTo"]/i')
+    if synonyms is not None:
+        product['synonyms'] = synonyms.text.split("; ")
 
     # Extract product's `Material Safety Data Sheet`, if any.
     msds_link = tree.find('.//a[@title="Download MSDS"]')
