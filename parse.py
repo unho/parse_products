@@ -67,6 +67,8 @@ def extract_product_data(url):
             product['pid'] = value
         elif label == "Product Name":
             product['name'] = value
+        elif label == "CAS":
+            product['CAS'] = value
         elif label == "Molecular Formula":
             product['structure'] = convert_formula(value)
 
