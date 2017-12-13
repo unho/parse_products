@@ -19,6 +19,7 @@
 
 import math
 import re
+from multiprocessing import Pool, cpu_count
 
 import requests
 from lxml import html
@@ -180,4 +181,8 @@ def get_product_data(url, count=None):
             a product.
     :rtype: dict
     """
-    return [extract_product_data(url) for url in get_product_links(url, count)]
+    pool = Pool(cpu_count() * 2)
+    results = pool.map(extract_product_data, get_product_links(url, count))
+    pool.terminate()
+    pool.join()
+    return results
