@@ -101,6 +101,11 @@ def extract_product_data(url):
     if msds_link is not None:
         product['pdf_msds'] = msds_link.attrib['href']
 
+    # Extract product's image, if any.
+    img = tree.find('.//a[@class="fancybox"]/img')
+    if img is not None:
+        product['img'] = img.attrib['src']
+
     # Extract more product data from the `Product Specification` table.
     table = tree.xpath('//table[@class="ptable"]')[1]
     for useful_row in table.xpath('.//tr[td[@class="ptdataleft"]]'):
